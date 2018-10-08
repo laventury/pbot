@@ -8,11 +8,11 @@ def main():
     taskfiles = [x[:-3] for x in glob.glob("*.py") if x.find("task") != -1]
     taskfiles.sort()
     
-    for tf in taskfiles:
+    for tasklib in taskfiles:
         try:            
-            task = __import__(tf).task_X          
+            task = __import__(tasklib).task_X          
         except ImportError:
-            print("Erro na importação da tarefa %s"%(tf))
+            print("Erro na importação da tarefa %s"%(tasklib))
           
         task.execute()
             

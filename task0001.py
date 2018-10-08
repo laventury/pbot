@@ -9,6 +9,7 @@ Created on Sun Oct  7 10:57:46 2018
 from lib.task import taskModel
 from lib.database import dbsql, table
 from lib.sap import sapvbs
+from lib.regex import RegExec
 import os
 
 class task(taskModel):
@@ -17,7 +18,7 @@ class task(taskModel):
         
         super(task, self).execute()
 
-        # Criando e conectando estrutura de dados e DB
+        # 1) Criando e conectando estrutura de dados e DB
         
         db = dbsql()
         
@@ -43,28 +44,30 @@ class task(taskModel):
         
         tb = table(db, "t0001_medidas", columns)
         
-        # Vbscript 
+        # 2) Vbscript - Extraindo dados do SAP
         
-        sap = sapvbs("t0001_medidas.vbs","t0001_output.txt")
+        sap1 = sapvbs("t0001_medncon.vbs","t0001_medncon.txt")       
+        sap1.execute()
+
+        sap2 = sapvbs("t0001_medconc.vbs","t0001_medconc.txt")   
         
-        #   Vbs - Substituindo template
+        subs = [('#DTSTART#','01.01.201'),
+                ('#DTEND#','30.01.2018'),]
         
-        fileInput = "t0001_notas.txt"
+        sap2.subs(subs)
+        sap2.execute()
         
-        values = [("#FILEINPUT#", fileInput)]
-        sap.subs(values)
+        # 3) Aplicar regex para extracao das informacoes
         
-        # Consulta notas atuais abertas e salva no arquivo de entradas 
+        Patern = '\|\w?\s*(?P<Item>\d+)\s*\|\s*(?P<Medida>\d+)\s*\|\s*(?P<Nota>\d+)\s*\|\s*(?P<Ordem>\d*)\s*\|(?P<Prioridade>\d*)\|(?P<TextoMedida>[^\|]+)\s*\|(?P<TextoItem>[^\|]*)\|(?P<CenTrabRes>[^\|\s]*)\s*\|(?P<StatusUsu>[^\|]+)\s*\|(?P<StatusSis>[^\|]+)\|(?P<LocalInst>[^\|]+)\s*\|(?P<CenTrabExe>[^\|\s]*)\s*\|[^\|]*\|[^\|]*\|[^\|]*\|(?P<DataNota>[^\|]+)\|(?P<DataConc>[^\|]*)\|\s*(?P<ArO>[^\|]+)\s*\|\s*(?P<CodMed>\w*)'
+        data1 = RegExec(Patern, sap1.outputFilePath)
+        data2 = RegExec(Patern, sap2.outputFilePath)
         
-        selNotes = tb.db.output("SELECT DISTINCT nota FROM t0001_medidas WHERE status_sis NOT LIKE '%MSUC%'")
+        # 4) Salva informacoes no banco de dados
         
-        strNotes = "\n".join([x[0] for x in selNotes])
-        
-        fileInputPath = os.path.join(sap.path,fileInput)
-        file = open(fileInputPath,"w+")
-        file.write(strNotes)
-        
-        #sap.execute()
-        
+        tb.insert(data1)
+        tb.insert(data2)
+
+
         
 task_X = task()
