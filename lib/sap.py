@@ -29,8 +29,13 @@ class sapvbs:
 
     def execute(self):     
 
-        if os.path.isfile(self.outputFile):
-            os.remove(self.outputFile)
-                    
-        subprocess.check_call(self.SapFile, shell=True)
-    
+        if os.path.isfile(self.outputFilePath):
+            os.remove(self.outputFilePath)
+
+        tempVbsFile = os.path.join(self.path,"temp.vbs")
+        
+        open(tempVbsFile,"w+").write(self.vbs)        
+        
+        subprocess.check_call(tempVbsFile , shell=True)
+        
+        os.remove(tempVbsFile)

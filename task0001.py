@@ -10,6 +10,7 @@ from lib.task import taskModel
 from lib.database import dbsql, table
 from lib.sap import sapvbs
 from lib.regex import RegExec
+from lib.report import PlotLine
 import os
 
 class task(taskModel):
@@ -43,30 +44,35 @@ class task(taskModel):
             ]
         
         tb = table(db, "t0001_medidas", columns)
+        tb.db.script_file("t0001_sqlcreaper.txt")
         
-        # 2) Vbscript - Extraindo dados do SAP
         
-        sap1 = sapvbs("t0001_medncon.vbs","t0001_medncon.txt")       
-        sap1.execute()
-
-        sap2 = sapvbs("t0001_medconc.vbs","t0001_medconc.txt")   
+#        # 2) Vbscript - Extraindo dados do SAP
+#        
+#        sap1 = sapvbs("t0001_medncon.vbs","t0001_medncon.txt")       
+#        sap1.execute()
+#
+#        sap2 = sapvbs("t0001_medconc.vbs","t0001_medconc.txt")   
+#        
+#        subs = [('#DTSTART#','01.01.2013'),
+#                ('#DTEND#','09.10.2018'),]
+#        
+#        sap2.subs(subs)
+#        sap2.execute()
+#        
+#        # 3) Aplicar regex para extracao das informacoes
+#        
+#        Patern = '\|\w?\s*(?P<Item>\d+)\s*\|\s*(?P<Medida>\d+)\s*\|\s*(?P<Nota>\d+)\s*\|\s*(?P<Ordem>\d*)\s*\|(?P<Prioridade>\d*)\|(?P<TextoMedida>[^\|]+)\s*\|(?P<TextoItem>[^\|]*)\|(?P<CenTrabRes>[^\|\s]*)\s*\|(?P<StatusUsu>[^\|]+)\s*\|(?P<StatusSis>[^\|]+)\|(?P<LocalInst>[^\|]+)\s*\|(?P<CenTrabExe>[^\|\s]*)\s*\|[^\|]*\|[^\|]*\|[^\|]*\|(?P<DataNota>[^\|]+)\|(?P<DataConc>[^\|]*)\|\s*(?P<ArO>[^\|]+)\s*\|\s*(?P<CodMed>\w*)'
+#        data1 = RegExec(Patern, sap1.outputFilePath)
+#        data2 = RegExec(Patern, sap2.outputFilePath)
+#        
+#        # 4) Salva informacoes no banco de dados
+#        
+#        tb.insert(data1)
+#        tb.insert(data2)
         
-        subs = [('#DTSTART#','01.01.201'),
-                ('#DTEND#','30.01.2018'),]
+        PlotLine(tb.db.output_file("t0001_sqlcalcmed.txt"))
         
-        sap2.subs(subs)
-        sap2.execute()
-        
-        # 3) Aplicar regex para extracao das informacoes
-        
-        Patern = '\|\w?\s*(?P<Item>\d+)\s*\|\s*(?P<Medida>\d+)\s*\|\s*(?P<Nota>\d+)\s*\|\s*(?P<Ordem>\d*)\s*\|(?P<Prioridade>\d*)\|(?P<TextoMedida>[^\|]+)\s*\|(?P<TextoItem>[^\|]*)\|(?P<CenTrabRes>[^\|\s]*)\s*\|(?P<StatusUsu>[^\|]+)\s*\|(?P<StatusSis>[^\|]+)\|(?P<LocalInst>[^\|]+)\s*\|(?P<CenTrabExe>[^\|\s]*)\s*\|[^\|]*\|[^\|]*\|[^\|]*\|(?P<DataNota>[^\|]+)\|(?P<DataConc>[^\|]*)\|\s*(?P<ArO>[^\|]+)\s*\|\s*(?P<CodMed>\w*)'
-        data1 = RegExec(Patern, sap1.outputFilePath)
-        data2 = RegExec(Patern, sap2.outputFilePath)
-        
-        # 4) Salva informacoes no banco de dados
-        
-        tb.insert(data1)
-        tb.insert(data2)
 
 
         

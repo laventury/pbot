@@ -1,0 +1,34 @@
+SELECT Mes, IFNULL(medpas.Total,0) as abertas, IFNULL(mednov.Total,0) as Nova, IFNULL(medconc.Total,0) as Concluida FROM periodo_ano
+
+-- calculo de passivo de medidas
+
+LEFT JOIN
+(SELECT Mes as M, IFNULL(COUNT(id),0) as Total FROM periodo_ano AS perano
+
+  LEFT JOIN
+  (SELECT * FROM t0001_medidas) AS mednco
+  ON 
+  ((mednco.status_sis not like '%msuc%' and mednco.datanota <= perano.Ultdia)
+  OR
+   (mednco.status_sis like '%msuc%' and mednco.datanota <= perano.Ultdia and mednco.dataconc > perano.Ultdia))
+
+  GROUP BY M) AS medpas
+ON periodo_ano.Mes = medpas.M
+
+
+-- Calculo de medidas novas p mes
+
+LEFT JOIN 
+(SELECT strftime('%Y-%m',datanota) As M, COUNT(id) AS Total FROM t0001_medidas 
+ GROUP BY M) AS mednov
+ON periodo_ano.Mes = mednov.M
+
+
+-- calculo de medidas concluidas p mes
+
+LEFT JOIN
+(SELECT strftime('%Y-%m',dataconc) As M, COUNT(id) AS Total FROM t0001_medidas 
+ WHERE
+ status_sis like '%msuc%'
+ GROUP BY M) AS medconc
+ON periodo_ano.Mes = medconc.M
