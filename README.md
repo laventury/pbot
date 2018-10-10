@@ -1,5 +1,6 @@
-# PBot - Sistema Modular de Processamento de Tarefas
+# PBot - Rotina Modular de Processamento de Tarefas
 
-Os Módulos de Tarefas são compostos por arquivos python inseridos no diretório raiz do projeto. Tais módulos devem ser nomeados atendendo o padrão taskXXXX.py, onde o XXXX refere-se ao ID númerico e sequêncial da tarefa.
+Os Módulos de Tarefas devem ser escritos em linguagem python e dispostos no diretório raiz do projeto seguindo o padrão taskXXXX.py, onde o XXXX refere-se ao ID númerico e sequêncial da tarefa.
 
-A rotina principal pbot.py se encarrega de verificar a existência do módulos, carrega-los dinamicamente e executar a função execute().
+A rotina principal carrega os módulo dinamicamente e executa a tarefa caso a condicionante seja atendida. A biblioteca original utilizará condicionantes de tempo (à implementar), adicionalmente cada modulo poderá adotar suas próprias condicionantes.
+
