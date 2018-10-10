@@ -3,7 +3,7 @@
 """
 Created on Sun Oct  7 10:57:46 2018
 
-@author: ygor
+@author: Ygor Pitombeira
 """
 
 from lib.task import taskModel
@@ -11,15 +11,16 @@ from lib.database import dbsql, table
 from lib.sap import sapvbs
 from lib.regex import RegExec
 from lib.report import PlotLine
-import os
 
 class task(taskModel):
-
+        
     def execute(self):
         
-        super(task, self).execute()
-
-        # 1) Criando e conectando estrutura de dados e DB
+        if not super().dispatcher():
+            return 0      
+        super().execute()
+                    
+         # 1) Criando e conectando estrutura de dados e DB
         
         db = dbsql()
         
@@ -45,8 +46,8 @@ class task(taskModel):
         
         tb = table(db, "t0001_medidas", columns)
         tb.db.script_file("t0001_sqlcreaper.txt")
-        
-        
+#        
+#        
 #        # 2) Vbscript - Extraindo dados do SAP
 #        
 #        sap1 = sapvbs("t0001_medncon.vbs","t0001_medncon.txt")       
@@ -70,10 +71,8 @@ class task(taskModel):
 #        
 #        tb.insert(data1)
 #        tb.insert(data2)
-        
+#        
         PlotLine(tb.db.output_file("t0001_sqlcalcmed.txt"))
         
-
-
         
 task_X = task()

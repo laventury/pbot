@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Sun Oct  7 10:57:46 2018
+
+@author: Ygor Pitombeira
+"""
 
 import glob
 
