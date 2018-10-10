@@ -1,4 +1,0 @@
-INSERT INTO pb1_medidas 
-(item,medida,nota,ordem, prioridade, texto_medida, texto_item, centrabres, status_usu, status_sis, local, centrabexe, datanota, dataconc, ArO, CodMed)
-VALUES
-(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
