@@ -5,7 +5,7 @@ Created on Sun Oct  7 10:57:46 2018
 
 @author: Ygor Pitombeira
 """
-
+from lib import schedule
 from lib.task import taskModel
 from lib.database import dbsql, table
 from lib.sap import sapvbs
@@ -74,5 +74,6 @@ class task(taskModel):
 #        
         PlotLine(tb.db.output_file("t0001_sqlcalcmed.txt"))
         
+        return schedule.CancelJob         
         
-task_X = task()
+t0001 = task()

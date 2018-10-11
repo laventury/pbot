@@ -4,23 +4,19 @@ Created on Sun Oct  7 10:57:46 2018
 
 @author: Ygor Pitombeira
 """
+from lib import schedule
+import time
 
-import glob
-
+from task0001 import t0001
   
 def main():
- 
-    taskfiles = [x[:-3] for x in glob.glob("*.py") if x.find("task") != -1]
-    taskfiles.sort()
-    
-    for tasklib in taskfiles:
-        try:            
-            task = __import__(tasklib).task_X          
-        except ImportError:
-            print("Erro na importação da tarefa %s"%(tasklib))
-          
-        task.execute()
-            
+
+    schedule.every(10).seconds.do(t0001.execute)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+           
 if __name__ == "__main__":
     main()
 
