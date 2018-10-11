@@ -6,46 +6,46 @@ Created on Sun Oct  7 10:57:46 2018
 @author: Ygor Pitombeira
 """
 from lib import schedule
-from lib.task import taskModel
 from lib.database import dbsql, table
 from lib.sap import sapvbs
 from lib.regex import RegExec
 from lib.report import PlotLine
+from datetime import datetime
 
-class task(taskModel):
+class taskModel:    
         
-    def execute(self):
+    def setSchedule(self):
+        setSchedule = schedule.every(10).seconds.tag('t0001')
+        return setSchedule
         
-        if not super().dispatcher():
-            return 0      
-        super().execute()
-                    
-         # 1) Criando e conectando estrutura de dados e DB
-        
-        db = dbsql()
-        
-        columns = [
-        	('id','INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT'),
-        	('item','INTEGER'),
-        	('medida','INTEGER'),
-        	('nota','VARCHAR(20)'),
-        	('ordem','VARCHAR(20)'),
-        	('prioridade','integer'),
-        	('texto_medida','TEXT'),
-        	('texto_item','TEXT'),
-        	('centrabres','VARCHAR(12)'),
-        	('status_usu','VARCHAR(30)'),
-        	('status_sis','VARCHAR(30)'),
-        	('local','varchar(50)'),
-        	('centrabexe','VARCHAR(12)'),
-        	('datanota','varchar(20)'),
-        	('dataconc','varchar(20)'),
-        	('ArO','varchar(10)'),
-        	('CodMed','varchar(3)')
-            ]
-        
-        tb = table(db, "t0001_medidas", columns)
-        tb.db.script_file("t0001_sqlcreaper.txt")
+    def job(self):
+        print("rodando task 1")              
+#         # 1) Criando e conectando estrutura de dados e DB
+#        
+#        db = dbsql()
+#        
+#        columns = [
+#        	('id','INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT'),
+#        	('item','INTEGER'),
+#        	('medida','INTEGER'),
+#        	('nota','VARCHAR(20)'),
+#        	('ordem','VARCHAR(20)'),
+#        	('prioridade','integer'),
+#        	('texto_medida','TEXT'),
+#        	('texto_item','TEXT'),
+#        	('centrabres','VARCHAR(12)'),
+#        	('status_usu','VARCHAR(30)'),
+#        	('status_sis','VARCHAR(30)'),
+#        	('local','varchar(50)'),
+#        	('centrabexe','VARCHAR(12)'),
+#        	('datanota','varchar(20)'),
+#        	('dataconc','varchar(20)'),
+#        	('ArO','varchar(10)'),
+#        	('CodMed','varchar(3)')
+#            ]
+#        
+#        tb = table(db, "t0001_medidas", columns)
+#        tb.db.script_file("t0001_sqlcreaper.txt")
 #        
 #        
 #        # 2) Vbscript - Extraindo dados do SAP
@@ -72,8 +72,8 @@ class task(taskModel):
 #        tb.insert(data1)
 #        tb.insert(data2)
 #        
-        PlotLine(tb.db.output_file("t0001_sqlcalcmed.txt"))
+#        PlotLine(tb.db.output_file("t0001_sqlcalcmed.txt"))
         
-        return schedule.CancelJob         
+        #return schedule.CancelJob        
         
-t0001 = task()
+
