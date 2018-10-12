@@ -14,9 +14,9 @@ from datetime import datetime
 
 class taskModel:    
         
-    def setSchedule(self):
-        setSchedule = schedule.every(10).seconds.tag('t0001')
-        return setSchedule
+    def scheduleJob(self):
+        self.scheduleJob = schedule.every(10).seconds.tag('t0001','tasks')
+        return self.scheduleJob
         
     def job(self):
         print("rodando task 1")              
@@ -74,6 +74,6 @@ class taskModel:
 #        
 #        PlotLine(tb.db.output_file("t0001_sqlcalcmed.txt"))
         
-        #return schedule.CancelJob        
+        schedule.cancel_job(self.scheduleJob)       
         
 
