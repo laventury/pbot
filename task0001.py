@@ -10,6 +10,7 @@ from lib.task import taskModel
 from lib.database import dbsql, table
 from lib.sap import sapvbs
 from lib.regex import RegExec
+
 from lib.report import PlotLine
 
 class task(taskModel):
