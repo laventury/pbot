@@ -6,15 +6,15 @@ Created on Sun Oct  7 10:57:46 2018
 """
 from lib import schedule
 import time
-<<<<<<< HEAD
 import threading
+import queue
 import glob
 
 jobqueue = queue.Queue()
 botJobs = set()
 
 def worker_main():
-    while 1:
+    while True:
         job_func = jobqueue.get()
         job_func()
         jobqueue.task_done()
@@ -35,18 +35,11 @@ def loadTasks():
 
   
 def main():
-    schedule.every(30).seconds.do(loadTasks).run()
+    
+    schedule.every(1).day.do(loadTasks).run()
 
     worker_thread = threading.Thread(target=worker_main)
     worker_thread.start()
-=======
-
-from task0001 import t0001
-  
-def main():
-
-    schedule.every(10).seconds.do(t0001.execute)
->>>>>>> parent of 1a2c80d... shedule task periodic complete
 
     while True:
         schedule.run_pending()

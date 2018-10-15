@@ -7,14 +7,15 @@ Created on Sun Oct  7 10:57:46 2018
 """
 
 from lib import schedule
+from datetime import datetime
 
 class taskModel:    
         
     def scheduleJob(self):
-        scheduleJob = schedule.every(20).seconds.tag('t0002','tasks')
+        scheduleJob = schedule.every().minute.tag('t0002','tasks')
         return scheduleJob
         
     def job(self):
-        print("rodando task 2")                      
+        print("rodando task 2 : ",datetime.now())                         
         
 
