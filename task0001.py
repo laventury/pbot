@@ -12,22 +12,22 @@ from lib.regex import RegExec
 from lib.report import PlotLine
 from datetime import datetime
 
-class taskModel:  
-        
+class taskModel:
+
     def scheduleJob(self):
         dtStart = datetime(2018, 10, 15, 14, 44)
         self.scheduleJob = schedule.every().minute.start(dtStart).tag('t0001','tasks')
         return self.scheduleJob
 
     def job(self):
-        
-        print("rodando task 1 : ",datetime.now())     
-        #schedule.cancel_job(self.scheduleJob) 
-                    
+
+        print("rodando task 1 : ",datetime.now())
+        #schedule.cancel_job(self.scheduleJob)
+
 #         # 1) Criando e conectando estrutura de dados e DB
-#        
+#
 #        db = dbsql()
-#        
+#
 #        columns = [
 #        	('id','INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT'),
 #        	('item','INTEGER'),
@@ -47,33 +47,35 @@ class taskModel:
 #        	('ArO','varchar(10)'),
 #        	('CodMed','varchar(3)')
 #            ]
-#        
+#
 #        tb = table(db, "t0001_medidas", columns)
 #        tb.db.script_file("t0001_sqlcreaper.txt")
-#        
-#        
+#
+#
 #        # 2) Vbscript - Extraindo dados do SAP
-#        
-#        sap1 = sapvbs("t0001_medncon.vbs","t0001_medncon.txt")       
+#
+#        sap1 = sapvbs("t0001_medncon.vbs","t0001_medncon.txt")
 #        sap1.execute()
 #
-#        sap2 = sapvbs("t0001_medconc.vbs","t0001_medconc.txt")   
-#        
+#        sap2 = sapvbs("t0001_medconc.vbs","t0001_medconc.txt")
 #        subs = [('#DTSTART#','01.01.2013'),
 #                ('#DTEND#','09.10.2018'),]
-#        
 #        sap2.subs(subs)
 #        sap2.execute()
-#        
+#
 #        # 3) Aplicar regex para extracao das informacoes
-#        
+#
 #        Patern = '\|\w?\s*(?P<Item>\d+)\s*\|\s*(?P<Medida>\d+)\s*\|\s*(?P<Nota>\d+)\s*\|\s*(?P<Ordem>\d*)\s*\|(?P<Prioridade>\d*)\|(?P<TextoMedida>[^\|]+)\s*\|(?P<TextoItem>[^\|]*)\|(?P<CenTrabRes>[^\|\s]*)\s*\|(?P<StatusUsu>[^\|]+)\s*\|(?P<StatusSis>[^\|]+)\|(?P<LocalInst>[^\|]+)\s*\|(?P<CenTrabExe>[^\|\s]*)\s*\|[^\|]*\|[^\|]*\|[^\|]*\|(?P<DataNota>[^\|]+)\|(?P<DataConc>[^\|]*)\|\s*(?P<ArO>[^\|]+)\s*\|\s*(?P<CodMed>\w*)'
 #        data1 = RegExec(Patern, sap1.outputFilePath)
 #        data2 = RegExec(Patern, sap2.outputFilePath)
-#        
+#
 #        # 4) Salva informacoes no banco de dados
-#        
+#
 #        tb.insert(data1)
 #        tb.insert(data2)
-#        
-#        PlotLine(tb.db.output_file("t0001_sqlcalcmed.txt"))       
+#
+#        # 4.1) Consulta banco de dados
+#
+#        data3 = tb.db.output_file("t0001_sqlcalcmed.txt")
+#
+#        PlotLine(data3)
