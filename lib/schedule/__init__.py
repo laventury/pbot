@@ -158,8 +158,8 @@ class Job(object):
         self.last_run = None  # datetime of the last run
         self.next_run = None  # datetime of the next run
         self.period = None  # timedelta between runs, only valid for
-        self.start_day = None  # Specific day of the week to start on
-        self.begin = None  # manual set datetime of first run
+        self.start_weekday = None  # Specific day of the week to start on
+        self.start_datetime= None  # manual set datetime of first run
         self.tags = set()  # unique set of tags for the job
         self.scheduler = scheduler  # scheduler to register with
 
@@ -260,43 +260,43 @@ class Job(object):
     @property
     def monday(self):
         assert self.interval == 1, 'Use mondays instead of monday'
-        self.start_day = 'monday'
+        self.start_weekday = 'monday'
         return self.weeks
 
     @property
     def tuesday(self):
         assert self.interval == 1, 'Use tuesdays instead of tuesday'
-        self.start_day = 'tuesday'
+        self.start_weekday = 'tuesday'
         return self.weeks
 
     @property
     def wednesday(self):
         assert self.interval == 1, 'Use wedesdays instead of wednesday'
-        self.start_day = 'wednesday'
+        self.start_weekday = 'wednesday'
         return self.weeks
 
     @property
     def thursday(self):
         assert self.interval == 1, 'Use thursday instead of thursday'
-        self.start_day = 'thursday'
+        self.start_weekday = 'thursday'
         return self.weeks
 
     @property
     def friday(self):
         assert self.interval == 1, 'Use fridays instead of friday'
-        self.start_day = 'friday'
+        self.start_weekday = 'friday'
         return self.weeks
 
     @property
     def saturday(self):
         assert self.interval == 1, 'Use saturdays instead of saturday'
-        self.start_day = 'saturday'
+        self.start_weekday = 'saturday'
         return self.weeks
 
     @property
     def sunday(self):
         assert self.interval == 1, 'Use sundays instead of sunday'
-        self.start_day = 'sunday'
+        self.start_weekday = 'sunday'
         return self.weeks
 
     def tag(self, *tags):
@@ -315,7 +315,7 @@ class Job(object):
         return self
 
     def start(self, start):
-        self.begin = start
+        self.start_datetime= start
         return self
 
     def at(self, time_str):
@@ -326,10 +326,10 @@ class Job(object):
         :param time_str: A string in `XX:YY` format.
         :return: The invoked job instance
         """
-        assert self.unit in ('days', 'hours') or self.start_day
+        assert self.unit in ('days', 'hours') or self.start_weekday
         hour, minute = time_str.split(':')
         minute = int(minute)
-        if self.unit == 'days' or self.start_day:
+        if self.unit == 'days' or self.start_weekday:
             hour = int(hour)
             assert 0 <= hour <= 23
         elif self.unit == 'hours':
@@ -404,11 +404,11 @@ class Job(object):
 
         self.period = datetime.timedelta(**{self.unit: interval})
 
-        if self.begin is not None and not self.last_run:
-            self.next_run = self.begin 
+        if self.start_datetime is not None and not self.last_run:
+            self.next_run = self.start_datetime
         else:
             self.next_run = datetime.datetime.now() + self.period
-            if self.start_day is not None:
+            if self.start_weekday is not None:
                 assert self.unit == 'weeks'
                 weekdays = (
                     'monday',
@@ -419,20 +419,20 @@ class Job(object):
                     'saturday',
                     'sunday'
                 )
-                assert self.start_day in weekdays
-                weekday = weekdays.index(self.start_day)
+                assert self.start_weekday in weekdays
+                weekday = weekdays.index(self.start_weekday)
                 days_ahead = weekday - self.next_run.weekday()
                 if days_ahead <= 0:  # Target day already happened this week
                     days_ahead += 7
                 self.next_run += datetime.timedelta(days_ahead) - self.period
             if self.at_time is not None:
-                assert self.unit in ('days', 'hours') or self.start_day is not None
+                assert self.unit in ('days', 'hours') or self.start_weekday is not None
                 kwargs = {
                     'minute': self.at_time.minute,
                     'second': self.at_time.second,
                     'microsecond': 0
                 }
-                if self.unit == 'days' or self.start_day is not None:
+                if self.unit == 'days' or self.start_weekday is not None:
                     kwargs['hour'] = self.at_time.hour
                 self.next_run = self.next_run.replace(**kwargs)
                 # If we are running for the first time, make sure we run
@@ -444,7 +444,7 @@ class Job(object):
                         self.next_run = self.next_run - datetime.timedelta(days=1)
                     elif self.unit == 'hours' and self.at_time.minute > now.minute:
                         self.next_run = self.next_run - datetime.timedelta(hours=1)
-            if self.start_day is not None and self.at_time is not None:
+            if self.start_weekday is not None and self.at_time is not None:
                 # Let's see if we will still make that time we specified today
                 if (self.next_run - datetime.datetime.now()).days >= 7:
                     self.next_run -= self.period
