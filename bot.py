@@ -19,7 +19,6 @@ def worker_main():
         job_func()
         jobqueue.task_done()
 
-
 def loadTasks():
     global botJobs
     taskfiles = [x[:-3] for x in glob.glob("*.py") if x.find("task") != -1]
@@ -32,7 +31,6 @@ def loadTasks():
         if not botJobs >= scheduleJob.tags:
             scheduleJob.do(jobqueue.put, Currentask.job)
             botJobs |= scheduleJob.tags
-
   
 def main():
     

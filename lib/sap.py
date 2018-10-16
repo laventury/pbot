@@ -8,6 +8,7 @@ Created on Thu Oct  4 16:25:20 2018
 import os
 import re
 import subprocess
+import time
 
 class sapvbs:
 
@@ -36,6 +37,15 @@ class sapvbs:
         
         open(tempVbsFile,"w+").write(self.vbs)        
         
-        subprocess.check_call(tempVbsFile , shell=True)
+        subprocess.check_call(tempVbsFile, shell=True)
         
         os.remove(tempVbsFile)
+        
+ 
+    def openSAP(self, connectFile): 
+        connectFilePath = os.path.join(self.path, connectFile)
+        ret = subprocess.check_call(connectFilePath, shell=True)
+        time.sleep(5)
+        return not ret
+        
+        
