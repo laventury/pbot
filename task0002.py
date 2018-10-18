@@ -11,8 +11,10 @@ from datetime import datetime
 
 class taskChild(taskModel):
 
-    def set_schedule(self):
-        return self.scheduleJob.second
+    def __init__(self, id):
+        super().__init__(id)
+        self.scheduleJob.interval = 10
+        self.scheduleJob.unit = 'seconds'
 
     def job(self):
         print("rodando task 2 : ",datetime.now())

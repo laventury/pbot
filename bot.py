@@ -27,10 +27,9 @@ def loadTasks():
     for taskfile in taskfiles:
         tasklib = __import__(taskfile)
         Currentask = tasklib.task
-        scheduleJob = Currentask.set_schedule()
-        if not botJobs >= scheduleJob.tags:
-            scheduleJob.do(jobqueue.put, Currentask.execJob)
-            botJobs |= scheduleJob.tags
+        if not botJobs >= Currentask.scheduleJob.tags:
+            Currentask.scheduleJob.do(jobqueue.put, Currentask.execJob)
+            botJobs |= Currentask.scheduleJob.tags
 
 def main():
 
