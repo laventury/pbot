@@ -15,8 +15,6 @@ from lib.sap import sapvbs
 from lib.regex import RegExec
 from lib.report import PlotLine
 
-
-
 class taskChild(taskModel):
 
     def __init__(self, id):
