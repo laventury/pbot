@@ -2,7 +2,7 @@
 """
 Created on Sun Oct  7 10:57:46 2018
 
-@author: Ygor Pitombeira    
+@author: Ygor Pitombeira
 """
 from lib import schedule
 import time
@@ -23,17 +23,16 @@ def loadTasks():
     global botJobs
     taskfiles = [x[:-3] for x in glob.glob("*.py") if x.find("task") != -1]
     taskfiles.sort()
-    
-    for tasklib in taskfiles:       
-        task = __import__(tasklib)
-        Currentask = task.taskModel()  
-        scheduleJob = Currentask.scheduleJob()
-        if not botJobs >= scheduleJob.tags:
-            scheduleJob.do(jobqueue.put, Currentask.job)
-            botJobs |= scheduleJob.tags
-  
+
+    for taskfile in taskfiles:
+        tasklib = __import__(taskfile)
+        Currentask = tasklib.task
+        if not botJobs >= Currentask.scheduleJob.tags:
+            Currentask.scheduleJob.do(jobqueue.put, Currentask.execJob)
+            botJobs |= Currentask.scheduleJob.tags
+
 def main():
-    
+
     schedule.every(1).day.do(loadTasks).run()
 
     worker_thread = threading.Thread(target=worker_main)
@@ -42,7 +41,7 @@ def main():
     while True:
         schedule.run_pending()
         time.sleep(1)
-           
+
 if __name__ == "__main__":
 
     main()

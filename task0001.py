@@ -1,28 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Oct  7 10:57:46 2018
+Created on Sun Oct 17 10:57:46 2018
 
 @author: Ygor Pitombeira
 """
-from lib import schedule
+
+from datetime import datetime
+from datetime import date
+
+from lib.task import taskModel
 from lib.database import dbsql, table
 from lib.sap import sapvbs
 from lib.regex import RegExec
 from lib.report import PlotLine
-from datetime import datetime, date
 
-class taskModel:
+class taskChild(taskModel):
 
-    def scheduleJob(self):
-        dtStart = datetime(2018, 10, 15, 14, 44)
-        self.scheduleJob = schedule.every().second.start(dtStart).tag('t0001','tasks')
-        return self.scheduleJob
+    def __init__(self, id):
+        super().__init__(id)
+        self.scheduleJob.interval = 30
+        self.scheduleJob.unit = 'days'
+        self.scheduleJob.start(datetime(2018,10,19,12,00))
 
     def job(self):
-     
-       
-        #1) Criando e conectando estrutura de dados e DB
+
+        print("rodando task 1 : ",datetime.now())
+
+         #1) Criando e conectando estrutura de dados e DB
 
         db = dbsql()
 
@@ -51,15 +56,15 @@ class taskModel:
 
 
         # 2) Vbscript - Extraindo dados do SAP
-        
+
         # 2.1) medidas nao concluidas
         sapmnc = sapvbs("t0001_medncon.vbs","t0001_medncon.txt")
-        sapmnc.openSAP("txt.sap")               
+        sapmnc.openSAP("txt.sap")
         sapmnc.execute()
 
         # 2.2) medidas concluidas
         sapmco = sapvbs("t0001_medconc.vbs","t0001_medconc.txt")
-        
+
         DtStart = '06.10.2018' # Falta implementar lógica de ultima pesquisa
         DtEnd = date.today().strftime("%d.%m.%y")
         subs = [('#DTSTART#',DtStart),
@@ -84,5 +89,6 @@ class taskModel:
         data3 = tb.db.output_file("t0001_sqlcalcmed.txt")
 
         PlotLine(data3)
-        
-        schedule.cancel_job(self.scheduleJob)
+
+
+task = taskChild('t0001')
