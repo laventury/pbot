@@ -4,40 +4,94 @@ Created on Tue Oct  2 16:53:22 2018
 
 @author: wu3y
 """
-import re 
+
 from datetime import datetime
 from bokeh.models import DatetimeTickFormatter
-from bokeh.plotting import figure, show
+from bokeh.plotting import figure, show, save
+from bokeh.palettes import Category20
 
-  
+class plot:
     
-def PlotLine(DataIn):
-       
-    Pattern = re.compile("\('(?P<dt>.{7})',\s*(?P<ma>\d*),\s*(?P<mn>\d*),\s*(?P<mc>\d*)")
+    def __init__(self, title=None, data=[], legends=[], width=800, height=400):
+        self.title = title
+        self.legends = legends
+        self.width = width
+        self.height = height
+        self.xdt = False
+        self.data = data
+        self.frmDtIn = '%Y-%m'
+        self.frmDtOut = '%m/%Y'
+
+    @property
+    def dt(self):
+        self.xdt = True
+        return self
     
-    DataPlot = Pattern.findall(str(DataIn))
+    @property
+    def dma(self):
+        self.frmDtIn = '%Y-%m-%d'
+        self.frmDtOut = '%d/%m/%Y'
+        return self
     
-    DateList = [datetime.strptime(d[0],'%Y-%m') for d in DataPlot]
-    ValuesMA = [d[1] for d in DataPlot]
-    ValuesMN = [d[2] for d in DataPlot]
-    ValuesMC = [d[3] for d in DataPlot]
+    def execute(self):
+     
+        self.fig = figure(title=self.title, plot_width=self.width, plot_height=self.height)
+        
+        if self.xdt:
+            Xaxis = [datetime.strptime(x,self.frmDtIn) for x in self.data[0]]
+               
+            self.fig.xaxis.formatter=DatetimeTickFormatter(
+                    hours=[self.frmDtOut],
+                    days=[self.frmDtOut],
+                    months=[self.frmDtOut],
+                    years=[self.frmDtOut],
+                )
+        else:
+            Xaxis = self.data[0]
+            
+        
+        QtdColY = len(self.data) - 1
+        
+        # Prenchimento de legendas 
+        legends = ['' for y in range(0,QtdColY)]
+        if self.legends:
+            ColInd = 0
+            QtdLegends = len(self.legends)
+            for legend in self.legends:
+                legends[ColInd] = legend
+                ColInd += 1
+                if ColInd == QtdLegends:
+                    break
+        
+        if QtdColY < 3 : 
+            QtdPal = 3
+        else: 
+            QtdPal = QtdColY
+        
+        Palette = Category20[QtdPal]
+        ColInd = 0
+        
+        for Yaxis in self.data[1:]:
+            self.fig.line(Xaxis, Yaxis, legend=legends[ColInd], line_width=2,line_color=Palette[ColInd])
+            self.fig.circle(Xaxis, Yaxis, legend=legends[ColInd], fill_color=Palette[ColInd], size=8)
+            ColInd += 1
+     
+    def show(self):
+        self.execute()  
+        show(self.fig)
+        return self
     
-    p = figure(plot_width=800, plot_height=400)
+    def save(self):
+        self.execute()  
+        save(self.fig)
+        return self
     
-    p.line(DateList, ValuesMA,line_width=2,line_color="red")
-    p.circle(DateList, ValuesMA, legend="Medidas Passivo", fill_color="white", size=8)
+class page:
     
-    p.line(DateList, ValuesMN,line_width=2,line_color="green")
-    p.circle(DateList, ValuesMN, legend="Medidas novas", fill_color="white", size=8)
-    
-    p.line(DateList, ValuesMC,line_width=2)
-    p.circle(DateList, ValuesMC, legend="Medidas Concluída", fill_color="white", size=8)
-    
-    p.xaxis.formatter=DatetimeTickFormatter(
-            hours=["%m/%Y"],
-            days=["%m/%Y"],
-            months=["%m/%Y"],
-            years=["%m/%Y"],
-        )
-    
-    show(p)
+    def __init__(self):
+        self.plots = []
+        
+    def plot_add(self,**kwargs):
+        plotnew = plot(kwargs)
+        self.plots.append(plotnew)
+        return plotnew
