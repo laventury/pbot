@@ -21,13 +21,13 @@ class taskModel:
         self.configFile = os.path.join(path, id + ".cfg")
 
         config = configparser.ConfigParser()
-        
+        config_last_run = ''
         if os.path.isfile(self.configFile):     
             config.read(self.configFile)
-            config_last_run = datetime.strptime(config['Job']['last_run'],'%d/%m/%Y %H:%M')
+            if config['Job']['last_run']:
+                config_last_run = datetime.strptime(config['Job']['last_run'],'%d/%m/%Y %H:%M')
             
         else:
-            config_last_run = ''
             config['Job'] = {}
             config['Job']['last_run'] = ''
             with open(self.configFile, 'w') as configfile:
