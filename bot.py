@@ -10,15 +10,24 @@ import threading
 import queue
 import glob
 
+# jobqueue - Pilha de execucao de trabalhos
+# botJobs - Set de trabalho do Bot (Controle trabalhos sendo executados)
 jobqueue = queue.Queue()
 botJobs = set()
 
+# Rotina de execucao principal
+# puxa o trabalho do topo da pilha e executa
 def worker_main():
     while True:
         job_func = jobqueue.get()
         job_func()
         jobqueue.task_done()
 
+
+# Rotina de Carregamento de trabalhos na pilha
+# verifica se existe novo arquivo de rotina de trabalho
+# carrega na pilha de trabalhos e atualiza o set de trabalhos 
+# para evitar inclusão de trabalhos em duplicidade na pilha
 def loadTasks():
     global botJobs
     taskfiles = [x[:-3] for x in glob.glob("*.py") if x.find("task") != -1]
@@ -32,9 +41,10 @@ def loadTasks():
             botJobs |= Currentask.scheduleJob.tags
 
 def main():
-
+    # Coloca na agenda a rotina 1 - Carregamento e trabalhos
     schedule.every(1).day.do(loadTasks).run()
 
+    # Carrega rotina principal na mermoria de exec 
     worker_thread = threading.Thread(target=worker_main)
     worker_thread.start()
 
